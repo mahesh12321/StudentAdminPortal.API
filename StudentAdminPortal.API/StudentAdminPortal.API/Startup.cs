@@ -8,6 +8,7 @@ using Microsoft.Extensions.Hosting;
 using StudentAdminPortal.API.DataModels;
 using StudentAdminPortal.API.Repositories;
 using Microsoft.OpenApi.Models;
+using Microsoft.Extensions.Options;
 
 namespace StudentAdminPortal.API
 {
@@ -22,6 +23,16 @@ namespace StudentAdminPortal.API
 		public IConfiguration configuration { get; }
 		public void ConfigureServices(IServiceCollection services)
 		{
+			services.AddCors(Options =>
+			{
+				Options.AddPolicy("angularApplication", (builder) =>
+				 {
+					 builder.WithOrigins("http://localhost:4200")
+					 .AllowAnyHeader()
+					 .WithMethods("GET", "POST", "PUT", "DELETE")
+					 .WithExposedHeaders("*");
+				 });
+			});
 			services.AddControllers();
 						
            services.AddDbContext<StudentAdminContext>(Options => Options.UseSqlServer(configuration.GetConnectionString("StudentAdminPortalDB")));
@@ -44,6 +55,7 @@ namespace StudentAdminPortal.API
 			}
 
 			app.UseRouting();
+			app.UseCors("angularApplication");
 			app.UseSwagger();
 			app.UseSwaggerUI(c => {
 				c.SwaggerEndpoint("/swagger/v1/swagger.json", "Showing API V1");

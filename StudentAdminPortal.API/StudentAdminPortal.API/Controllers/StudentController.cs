@@ -31,5 +31,20 @@ namespace StudentAdminPortal.API.Controllers
 
 
         }
+        [HttpGet]
+        [Route("[controller]/{studentId:guid}")]
+        public async Task<IActionResult> GetStudentAsync([FromRoute] Guid studentId)
+        {
+            //Fetch student details 
+            var student = await studentRepository.GetStudentAsync(studentId);
+
+            //return student details
+            if (student==null)
+            {
+                return NotFound();
+            }
+            return Ok(mapper.Map<Student>(student));
+        }
+
     }
 }
